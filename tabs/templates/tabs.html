@@ -1,8 +1,73 @@
 {% extends 'layout.html' %}
-    {% block tabs %}
-        <h1>Tabs</h1>
+{% block tabs %}
+<h1>Tabs</h1>
+<div class="container">
+    <div class="d-flex flex-wrap justify-content-center">
         {% for tab in tabs %}
-        <a href="{{ tab.url }}">{{ tab.name }}</a>
-        <br>
-    {% endfor %}
+        <div class="tab_wrap m-2">
+            <div class="lwrap">
+                <a class="tab" href="{{ tab.url }}" title="{{ tab.tab_name }}"><img class="favicon"
+                                                         src="{{ url_for('static', filename='img/'+tab.favicon)}}"
+                                                         alt="favicon">
+                    {{ tab.tab_name[:12] }}
+                </a></div>
+            <div class="rwrap float-right">
+                <div class="dropdown float-right">
+                    <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="{{ url_for('edit_tab', tab_id=tab.id) }}">Edit</a>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#deleteModal{{ tab.id }}">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="deleteModal{{ tab.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="deleteModalLabel{{ tab.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ tab.id }}">Are you sure?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        You won't be able to revert this!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <form action="{{ url_for('delete_tab', tab_id=tab.id) }}" method="POST">
+                            <input class="btn btn-danger" type="submit" value="Delete">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+$('.dropdown').on('show.bs.dropdown', function () {
+    window.dropdown = true;
+})
+$('.dropdown').on('hide.bs.dropdown', function () {
+    window.dropdown = false;
+})
+
+$(document).ready(function(){
+    $('.lwrap').click(function() {
+        window.location.href=$(this).find('a').attr('href');
+        console.log('log');
+    })
+});
+
+
+
+</script>
 {% endblock %}

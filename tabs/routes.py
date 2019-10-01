@@ -1,20 +1,17 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from sqlalchemy.engine import url
-from tabs.forms import RegistrationForm, LoginForm, UpdateAccountForm, Add_tab
+from tabs.forms import RegistrationForm, LoginForm, UpdateAccountForm, TabForm
 from tabs.models import User, Tab
 from tabs import app, db, bcrypt
 from flask_login import login_user, logout_user, login_required, current_user, fresh_login_required
+import requests
+from bs4 import BeautifulSoup
 
-tab_set = [
-    {
-        'name' : 'tab 1',
-        'url' : 'https://google.com'
-    },
-    {
-        'name' : 'tab 2',
-        'url' : 'https://google.ru'
-    }
-]
+
+# Set headers
+headers = requests.utils.default_headers()
+headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+
 
 @app.route('/')
 def home():
@@ -83,17 +80,62 @@ def account():
 @app.route('/tabs/')
 @login_required
 def tabs():
+    tab_set = current_user.tabs
     return render_template('tabs.html', tabs=tab_set)
 
 @app.route("/tabs/add/",  methods=['GET', 'POST'])
 @login_required
 def add_tab():
-    form = Add_tab()
+    form = TabForm()
     if form.validate_on_submit():
+        if (not form.tab_name.data):
+            url = form.url.data
+            req = requests.get(url, headers)
+            soup = BeautifulSoup(req.content)
+            form.tab_name.data = soup.title.string
         tab = Tab(tab_name=form.tab_name.data, url=form.url.data, user_id=current_user.id,
-                  use_comment_as_name=form.comment_as_name.data, comment=form.comment.data)
+                  use_comment_as_name=form.use_comment_as_name.data, comment=form.comment.data)
         db.session.add(tab)
         db.session.commit()
         flash('Tab created!', 'success')
         return redirect(url_for('tabs'))
-    return render_template('add_tab.html', form=form)
+    return render_template('add_tab.html', legend='Create Tab', form=form)
+
+@app.route("/tabs/<int:tab_id>/edit/",  methods=['GET', 'POST'])
+@login_required
+def edit_tab(tab_id):
+    tab = Tab.query.get_or_404(tab_id)
+    if tab.user_id != current_user.id:
+        abort(403)
+    form = TabForm()
+    if form.validate_on_submit():
+        if (not form.tab_name.data):
+            url = form.url.data
+            req = requests.get(url, headers)
+            soup = BeautifulSoup(req.content)
+            form.tab_name.data = soup.title.string
+        tab.tab_name = form.tab_name.data
+        tab.url = form.url.data
+        tab.comment = form.comment.data
+        tab.use_comment_as_name = form.use_comment_as_name.data
+        db.session.add(tab)
+        db.session.commit()
+        flash('Updated.', 'success')
+        return redirect(url_for('tabs', tab_id=tab.id))
+    elif request.method == 'GET':
+        form.tab_name.data = tab.tab_name
+        form.url.data = tab.url
+        form.comment.data = tab.comment
+        form.use_comment_as_name.data = tab.use_comment_as_name
+    return render_template('add_tab.html', legend='Update Tab', tab=tab, form=form)
+
+@app.route("/tabs/<int:tab_id>/delete/",  methods=['POST'])
+@login_required
+def delete_tab(tab_id):
+    tab = Tab.query.get_or_404(tab_id)
+    if tab.user_id != current_user.id:
+        abort(403)
+    db.session.delete(tab)
+    db.session.commit()
+    flash('Tab has been deleted!', 'success')
+    return redirect(url_for('tabs'))

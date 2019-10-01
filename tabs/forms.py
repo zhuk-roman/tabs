@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional, url
 from tabs.models import User
 from tabs import bcrypt
 
@@ -56,9 +56,9 @@ class UpdateAccountForm(FlaskForm):
             if user:
                 raise ValidationError('Email is already taken.')
 
-class Add_tab(FlaskForm):
+class TabForm(FlaskForm):
     tab_name = StringField('Name')
-    url = StringField('URL', validators=[DataRequired(), Length(min=4)])
+    url = StringField('URL', validators=[DataRequired(), Length(min=4), url()])
     comment = TextAreaField('Comment')
-    comment_as_name = BooleanField('Use comment as a tab name')
-    submit = SubmitField('Create')
+    use_comment_as_name = BooleanField('Use comment as a tab name')
+    submit = SubmitField('Submit')

@@ -21,7 +21,7 @@ class Tab(db.Model):
     comment = db.Column(db.UnicodeText())
     use_comment_as_name = db.Column(db.Boolean, default=False)
     clicks = db.Column(db.Integer, nullable=False, default=0)
-    favicon = name = db.Column(db.String(240))
+    favicon =  db.Column(db.String(240), default='favicon.ico')
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False)
     def __repr__(self):
-        return f"Tab('{self.name}', '{self.url}')"
+        return f"Tab('{self.tab_name}', '{self.url}', '{self.comment}')"

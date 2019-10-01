@@ -3,3 +3,44 @@
     padding: 5px 30px;
     border-radius: 30px;
 }
+img.favicon{
+    width: 17px;
+    height: 17px;
+    margin: 0 3px 0 3px;
+}
+.tab_wrap{
+    border: 1px solid teal;
+    border-radius: 10px;
+    height: 34px;
+    width: 160px;
+    min-width: 160px;
+    line-height: 34px;
+    padding: 0 10px 0 10px;
+}
+.tab_wrap:hover > .rwrap > .dropdown > .dropdown-toggle {
+opacity: 1;
+}
+.dropdown {
+    width: 0;
+    right: 24px;
+    opacity: 1;
+}
+.dropdown-toggle{
+    opacity: 0.4;
+    transition: linear 0.3s;
+}
+.rwrap{
+    display: inline-block;
+}
+.lwrap{
+    display: inline-block;
+    min-width: 80%;
+    cursor: pointer;
+}
+.btn:focus,.btn:active {
+   outline: none !important;
+   box-shadow: none;
+}
+a.dropdown-item {
+    line-height: 27px;
+}
