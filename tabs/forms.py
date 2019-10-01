@@ -56,6 +56,7 @@ class UpdateAccountForm(FlaskForm):
             if user:
                 raise ValidationError('Email is already taken.')
 
+
 class TabForm(FlaskForm):
     tab_name = StringField('Name')
     url = StringField('URL', validators=[DataRequired(), Length(min=4), url()])

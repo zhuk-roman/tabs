@@ -58,22 +58,22 @@
 
 <main role="main" class="container mt-4">
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<div class="alert alert-{{ category }}">
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
-{% block home %}{% endblock %}
-{% block tabs %}{% endblock %}
-{% block register %}{% endblock %}
-{% block login %}{% endblock %}
-{% block account %}{% endblock %}
-{% block add_tab %}{% endblock %}
-{% block edit_tab %}{% endblock %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    {% block home %}{% endblock %}
+    {% block tabs %}{% endblock %}
+    {% block register %}{% endblock %}
+    {% block login %}{% endblock %}
+    {% block account %}{% endblock %}
+    {% block add_tab %}{% endblock %}
+    {% block edit_tab %}{% endblock %}
 
 </main>
 

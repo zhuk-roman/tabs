@@ -7,15 +7,15 @@ from flask_login import login_user, logout_user, login_required, current_user, f
 import requests
 from bs4 import BeautifulSoup
 
-
 # Set headers
 headers = requests.utils.default_headers()
-headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
 
 
 @app.route('/')
 def home():
     return render_template('home.html')
+
 
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
@@ -30,6 +30,7 @@ def register():
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -47,6 +48,7 @@ def login():
             flash('Login Unsuccessful.', 'danger')
     return render_template('login.html', title='Login', form=form)
 
+
 @app.route("/logout/")
 @login_required
 def logout():
@@ -54,11 +56,12 @@ def logout():
     flash('Logged Out.', 'success')
     return redirect(url_for('home'))
 
-@app.route("/account/",  methods=['GET', 'POST'])
+
+@app.route("/account/", methods=['GET', 'POST'])
 # @fresh_login_required
 @login_required
 def account():
-    form=UpdateAccountForm()
+    form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.new_password.data:
             current_user.email = form.email.data
@@ -77,13 +80,15 @@ def account():
         form.email.data = current_user.email
     return render_template('account.html', form=form)
 
+
 @app.route('/tabs/')
 @login_required
 def tabs():
     tab_set = current_user.tabs
     return render_template('tabs.html', tabs=tab_set)
 
-@app.route("/tabs/add/",  methods=['GET', 'POST'])
+
+@app.route("/tabs/add/", methods=['GET', 'POST'])
 @login_required
 def add_tab():
     form = TabForm()
@@ -101,7 +106,8 @@ def add_tab():
         return redirect(url_for('tabs'))
     return render_template('add_tab.html', legend='Create Tab', form=form)
 
-@app.route("/tabs/<int:tab_id>/edit/",  methods=['GET', 'POST'])
+
+@app.route("/tabs/<int:tab_id>/edit/", methods=['GET', 'POST'])
 @login_required
 def edit_tab(tab_id):
     tab = Tab.query.get_or_404(tab_id)
@@ -129,7 +135,8 @@ def edit_tab(tab_id):
         form.use_comment_as_name.data = tab.use_comment_as_name
     return render_template('add_tab.html', legend='Update Tab', tab=tab, form=form)
 
-@app.route("/tabs/<int:tab_id>/delete/",  methods=['POST'])
+
+@app.route("/tabs/<int:tab_id>/delete/", methods=['POST'])
 @login_required
 def delete_tab(tab_id):
     tab = Tab.query.get_or_404(tab_id)
