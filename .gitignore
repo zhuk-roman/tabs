@@ -1,6 +1,6 @@
 .idea
 venv
 __pycache__
-*.db
+/tabs/site.db
 /venv3.7.2/
 /codealike.json
