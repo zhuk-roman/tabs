@@ -5,6 +5,9 @@ from tabs.models import User, Tab
 from tabs import app, db, bcrypt
 from flask_login import login_user, logout_user, login_required, current_user, fresh_login_required
 import requests
+import favicon
+import random
+from datetime import date
 from bs4 import BeautifulSoup
 
 # Set headers
@@ -12,15 +15,15 @@ headers = requests.utils.default_headers()
 headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
 
 
-@app.route('/')
-def home():
-    return render_template('home.html')
+# @app.route('/')
+# def home():
+#     return render_template('home.html')
 
 
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('tabs'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -35,7 +38,7 @@ def register():
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('tabs'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -43,7 +46,7 @@ def login():
             login_user(user, remember=form.remember.data)
             print(request.args)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            return redirect(next_page) if next_page else redirect(url_for('tabs'))
         else:
             flash('Login Unsuccessful.', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -54,7 +57,7 @@ def login():
 def logout():
     logout_user()
     flash('Logged Out.', 'success')
-    return redirect(url_for('home'))
+    return redirect(url_for('tabs'))
 
 
 @app.route("/account/", methods=['GET', 'POST'])
@@ -81,7 +84,7 @@ def account():
     return render_template('account.html', form=form)
 
 
-@app.route('/tabs/')
+@app.route('/')
 @login_required
 def tabs():
     tab_set = current_user.tabs
@@ -98,8 +101,13 @@ def add_tab():
             req = requests.get(url, headers)
             soup = BeautifulSoup(req.content)
             form.tab_name.data = soup.title.string
+        favicon_url = favicon.get(form.url.data)[0].url
+        r = requests.get(favicon_url, allow_redirects=True)
+        favicon_file_name = str(random.randint(0,10**9)) + date.today().strftime('_%d_%m_%Y') + '.ico'
+        open(app.static_folder + '/img/' + favicon_file_name, 'wb').write(r.content)
         tab = Tab(tab_name=form.tab_name.data, url=form.url.data, user_id=current_user.id,
-                  use_comment_as_name=form.use_comment_as_name.data, comment=form.comment.data)
+                  use_comment_as_name=form.use_comment_as_name.data, comment=form.comment.data,
+                  favicon=favicon_file_name)
         db.session.add(tab)
         db.session.commit()
         flash('Tab created!', 'success')
