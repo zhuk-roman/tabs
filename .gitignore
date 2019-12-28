@@ -1,7 +1,7 @@
 .idea
+.vscode
 venv
 __pycache__
-*site.db
+*.db
+tabs/site.db
 *.ico
-/venv3.7.2/
-/codealike.json

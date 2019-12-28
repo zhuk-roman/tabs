@@ -1,14 +1,13 @@
 {% extends 'layout.html' %}
 {% block tabs %}
 <h1>Tabs</h1>
-<div class="container">
-    <div class="d-flex flex-wrap justify-content-center">
+<div class="container mt-4">
+    <div class="d-flex flex-wrap justify-content-left">
         {% for tab in tabs %}
         <div class="tab_wrap m-2">
             <div class="lwrap">
-                <a class="tab" href="{{ tab.url }}" title="{{ tab.tab_name }}"><img class="favicon"
-                                                                                    src="{{ url_for('static', filename='img/'+tab.favicon)}}"
-                                                                                    alt="favicon">
+                <a class="tab" href="{{ tab.url }}" title="{{ tab.tab_name }}">
+                    <img class="favicon" src="{{ url_for('static', filename='img/'+tab.favicon)}}">
                     {{ tab.tab_name[:12] }}
                 </a></div>
             <div class="rwrap float-right">
