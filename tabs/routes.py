@@ -90,21 +90,41 @@ def tabs():
     tab_set = current_user.tabs
     return render_template('tabs.html', tabs=tab_set)
 
+def host_alive(url):
+    try:
+        requests.get(url, headers)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        flash(f'{url} not responding!', 'danger')
+        return False
+    except requests.exceptions.HTTPError:
+        return True
+    else:
+        return True
 
 @app.route("/tabs/add/", methods=['GET', 'POST'])
 @login_required
 def add_tab():
     form = TabForm()
     if form.validate_on_submit():
+        url = form.url.data
+        if not host_alive(url):
+            return render_template('add_tab.html', legend='Create Tab', form=form)
         if (not form.tab_name.data):
-            url = form.url.data
+            # url = form.url.data
             req = requests.get(url, headers)
             soup = BeautifulSoup(req.content)
             form.tab_name.data = soup.title.string
-        favicon_url = favicon.get(form.url.data)[0].url
-        r = requests.get(favicon_url, allow_redirects=True)
-        favicon_file_name = str(random.randint(0,10**9)) + date.today().strftime('_%d_%m_%Y') + '.ico'
-        open(app.static_folder + '/img/' + favicon_file_name, 'wb').write(r.content)
+            if not form.tab_name.data:                           # if page title is missing use url instead
+                form.tab_name.data = url
+
+        favicon_obj = favicon.get(url)
+        if favicon_obj:                                          #save favicon if there is one
+            favicon_url = favicon.get(url)[0].url
+            r = requests.get(favicon_url, allow_redirects=True)
+            favicon_file_name = str(random.randint(0,10**9)) + date.today().strftime('_%d_%m_%Y') + '.ico'
+            open(app.static_folder + '/img/' + favicon_file_name, 'wb').write(r.content)
+        else:
+            favicon_file_name = None
         tab = Tab(tab_name=form.tab_name.data, url=form.url.data, user_id=current_user.id,
                   use_comment_as_name=form.use_comment_as_name.data, comment=form.comment.data,
                   favicon=favicon_file_name)
@@ -154,3 +174,4 @@ def delete_tab(tab_id):
     db.session.commit()
     flash('Tab has been deleted!', 'success')
     return redirect(url_for('tabs'))
+

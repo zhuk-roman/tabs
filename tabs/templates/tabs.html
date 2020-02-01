@@ -3,12 +3,22 @@
 <h1>Tabs</h1>
 <div class="container mt-4">
     <div class="d-flex flex-wrap justify-content-left">
+        <!-- Tabs -->
+        {% if not tabs|length %}
+        There is no tabs to display.<a class="ml-1" href={{ url_for('add_tab') }}> Create one</a>.
+        {%endif%}
         {% for tab in tabs %}
+        {# change tab name variables if use_comment_as_name is selected #}
+        {% if tab.use_comment_as_name and tab.comment|length > 1%}
+            {% set tab_name = tab.comment %}
+        {% else %}
+            {% set tab_name = tab.tab_name %}
+        {%endif%}
         <div class="tab_wrap m-2">
             <div class="lwrap">
-                <a class="tab" href="{{ tab.url }}" title="{{ tab.tab_name }}">
+                <a class="tab" href="{{ tab.url }}" title="{{ tab_name }}">
                     <img class="favicon" src="{{ url_for('static', filename='img/'+tab.favicon)}}">
-                    {{ tab.tab_name[:12] }}
+                    {{ tab_name[:12] }}
                 </a></div>
             <div class="rwrap float-right">
                 <div class="dropdown float-right">

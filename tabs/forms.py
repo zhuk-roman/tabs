@@ -59,7 +59,11 @@ class UpdateAccountForm(FlaskForm):
 
 class TabForm(FlaskForm):
     tab_name = StringField('Name')
-    url = StringField('URL', validators=[DataRequired(), Length(min=4), url()])
+    url = StringField('URL', validators=[DataRequired(), Length(min=4), url()], render_kw={"placeholder": "http://"})
     comment = TextAreaField('Comment')
     use_comment_as_name = BooleanField('Use comment as a tab name')
     submit = SubmitField('Submit')
+
+    def validate_comment(self, comment):
+        if str(comment.data).isspace():
+            raise ValidationError('Comment can not be an empty string!')

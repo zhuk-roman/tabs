@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from os import path
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -13,3 +14,6 @@ login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
 from tabs import routes
+if not path.isfile('tabs/site.db'):
+    print ("db file not exist, initialization")
+    db.create_all()
