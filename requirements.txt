@@ -24,4 +24,4 @@ Werkzeug==0.16.0
 WTForms==2.2.1
 favicon
 pytest
-
+mysqlclient

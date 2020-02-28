@@ -122,7 +122,10 @@ def add_tab():
             favicon_url = favicon.get(url)[0].url
             r = requests.get(favicon_url, allow_redirects=True)
             favicon_file_name = str(random.randint(0,10**9)) + date.today().strftime('_%d_%m_%Y') + '.ico'
-            open(app.static_folder + '/img/' + favicon_file_name, 'wb').write(r.content)
+            try:
+                open(app.static_folder + '/img/' + favicon_file_name, 'wb').write(r.content)
+            except (FileNotFoundError):
+                print('FileNotFoundError' + app.static_folder + '/img/' + favicon_file_name)
         else:
             favicon_file_name = None
         tab = Tab(tab_name=form.tab_name.data, url=form.url.data, user_id=current_user.id,
