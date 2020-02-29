@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from sqlalchemy.engine import url
 from tabs.forms import RegistrationForm, LoginForm, UpdateAccountForm, TabForm
 from tabs.models import User, Tab
-from tabs import app, db, bcrypt
+from tabs import app, db, bcrypt, hostname
 from flask_login import login_user, logout_user, login_required, current_user, fresh_login_required
 import requests
 import favicon
@@ -88,7 +88,7 @@ def account():
 @login_required
 def tabs():
     tab_set = current_user.tabs
-    return render_template('tabs.html', tabs=tab_set)
+    return render_template('tabs.html', hostname=hostname, tabs=tab_set)
 
 def host_alive(url):
     try:
