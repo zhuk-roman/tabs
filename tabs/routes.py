@@ -113,11 +113,16 @@ def add_tab():
             # url = form.url.data
             req = requests.get(url, headers)
             soup = BeautifulSoup(req.content)
-            form.tab_name.data = soup.title.string
-            if not form.tab_name.data:                           # if page title is missing use url instead
+            if soup.title:                                       # if title exist
+                form.tab_name.data = soup.title.string
+            if not form.tab_name.data:                           # if tab_name is missing print url instead
                 form.tab_name.data = url
 
-        favicon_obj = favicon.get(url)
+        try:
+            favicon_obj = favicon.get(url)
+        except requests.exceptions.HTTPError as e:
+            favicon_obj = None
+            print('favicon.get(url) error = ' + str(e.response.status_code))
         if favicon_obj:                                          #save favicon if there is one
             favicon_url = favicon.get(url)[0].url
             r = requests.get(favicon_url, allow_redirects=True)
