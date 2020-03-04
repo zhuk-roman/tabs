@@ -30,5 +30,4 @@ RUN pip install --upgrade pip && \
 
 EXPOSE 80
 
-# CMD tree /app
 # CMD python run.py
