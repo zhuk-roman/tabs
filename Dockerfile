@@ -10,6 +10,15 @@ FROM tiangolo/uwsgi-nginx-flask:python3.7
 # ENV FLASK_APP "run.py"
 
 # RUN mkdir /app
+WORKDIR /root
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf awscliv2.zip aws/
+
+COPY ./.aws /root/.aws
+COPY ./aws_credentials /root/.aws/credentials
+
 WORKDIR /app
 
 COPY requirements.txt uwsgi.ini /app/
