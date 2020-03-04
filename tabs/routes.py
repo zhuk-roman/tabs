@@ -32,7 +32,7 @@ def register():
         db.session.commit()
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Register', hostname=hostname, form=form)
 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -49,7 +49,7 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('tabs'))
         else:
             flash('Login Unsuccessful.', 'danger')
-    return render_template('login.html', title='Login', form=form)
+    return render_template('login.html', title='Login', hostname=hostname, form=form)
 
 
 @app.route("/logout/")
@@ -81,7 +81,7 @@ def account():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-    return render_template('account.html', form=form)
+    return render_template('account.html', hostname=hostname, form=form)
 
 
 @app.route('/')
@@ -108,7 +108,7 @@ def add_tab():
     if form.validate_on_submit():
         url = form.url.data
         if not host_alive(url):
-            return render_template('add_tab.html', legend='Create Tab', form=form)
+            return render_template('add_tab.html', legend='Create Tab', hostname=hostname, form=form)
         if (not form.tab_name.data):
             # url = form.url.data
             req = requests.get(url, headers)
@@ -140,7 +140,7 @@ def add_tab():
         db.session.commit()
         flash('Tab created!', 'success')
         return redirect(url_for('tabs'))
-    return render_template('add_tab.html', legend='Create Tab', form=form)
+    return render_template('add_tab.html', legend='Create Tab', hostname=hostname, form=form)
 
 
 @app.route("/tabs/<int:tab_id>/edit/", methods=['GET', 'POST'])
@@ -169,7 +169,7 @@ def edit_tab(tab_id):
         form.url.data = tab.url
         form.comment.data = tab.comment
         form.use_comment_as_name.data = tab.use_comment_as_name
-    return render_template('add_tab.html', legend='Update Tab', tab=tab, form=form)
+    return render_template('add_tab.html', legend='Update Tab', hostname=hostname, tab=tab, form=form)
 
 
 @app.route("/tabs/<int:tab_id>/delete/", methods=['POST'])
