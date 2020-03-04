@@ -25,3 +25,4 @@ WTForms==2.2.1
 favicon
 pytest
 mysqlclient
+boto3

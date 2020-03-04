@@ -7,6 +7,8 @@ from flask_login import login_user, logout_user, login_required, current_user, f
 import requests
 import favicon
 import random
+import os
+from tabs.s3 import upload_file, delete_file
 from datetime import date
 from bs4 import BeautifulSoup
 
@@ -123,14 +125,17 @@ def add_tab():
         except requests.exceptions.HTTPError as e:
             favicon_obj = None
             print('favicon.get(url) error = ' + str(e.response.status_code))
-        if favicon_obj:                                          #save favicon if there is one
+        if favicon_obj:                                          # save favicon if there is one
             favicon_url = favicon.get(url)[0].url
             r = requests.get(favicon_url, allow_redirects=True)
             favicon_file_name = str(random.randint(0,10**9)) + date.today().strftime('_%d_%m_%Y') + '.ico'
+            favicon_path = app.static_folder + '/img/' + favicon_file_name
             try:
-                open(app.static_folder + '/img/' + favicon_file_name, 'wb').write(r.content)
+                open(favicon_path, 'wb').write(r.content)
+                upload_file(favicon_path, object_name=favicon_file_name)
+                os.remove(favicon_path)
             except (FileNotFoundError):
-                print('FileNotFoundError' + app.static_folder + '/img/' + favicon_file_name)
+                print('FileNotFoundError ' + favicon_path)
         else:
             favicon_file_name = None
         tab = Tab(tab_name=form.tab_name.data, url=form.url.data, user_id=current_user.id,
@@ -180,6 +185,8 @@ def delete_tab(tab_id):
         abort(403)
     db.session.delete(tab)
     db.session.commit()
+    if tab.favicon and (tab.favicon != 'favicon.ico'):
+        delete_file(tab.favicon)
     flash('Tab has been deleted!', 'success')
     return redirect(url_for('tabs'))
 

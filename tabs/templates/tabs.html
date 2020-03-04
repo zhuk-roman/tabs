@@ -17,7 +17,7 @@
         <div class="tab_wrap m-2">
             <div class="lwrap">
                 <a class="tab" href="{{ tab.url }}" title="{{ tab_name }}">
-                    <img class="favicon" src="{{ url_for('static', filename='img/'+tab.favicon)}}">
+                    <img class="favicon" src="{{'https://tabs-flask.s3.eu-central-1.amazonaws.com/'+tab.favicon}}">
                     {{ tab_name[:12] }}
                 </a></div>
             <div class="rwrap float-right">
