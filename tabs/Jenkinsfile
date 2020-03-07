@@ -28,6 +28,12 @@ pipeline {
         }
       }
     }
+    stage('Remove unused docker image and sensetive data') {
+      steps{
+        sh "docker rmi $registry"
+        sh "rm -f aws_credentials"
+      }
+    }
     stage('Push image'){
         steps{
             script{
@@ -37,10 +43,9 @@ pipeline {
             }
         }
     }
-    stage('Remove unused docker image and sensetive data') {
+    stage('ECS force new deployment') {
       steps{
-        sh "docker rmi $registry"
-        sh "rm -f aws_credentials"
+        sh "aws ecs update-service --cluster white-hart --service tabs --force-new-deployment"
       }
     }
   }
