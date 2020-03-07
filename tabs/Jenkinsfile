@@ -28,12 +28,6 @@ pipeline {
         }
       }
     }
-    stage('Remove unused docker image and sensetive data') {
-      steps{
-        sh "docker rmi $registry"
-        sh "rm -f aws_credentials"
-      }
-    }
     stage('Push image'){
         steps{
             script{
@@ -42,6 +36,12 @@ pipeline {
                 }
             }
         }
+    }
+    stage('Remove unused docker image and sensetive data') {
+      steps{
+        sh "docker rmi $registry"
+        sh "rm -f aws_credentials"
+      }
     }
     stage('ECS force new deployment') {
       steps{
