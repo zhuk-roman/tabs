@@ -1,4 +1,3 @@
-Jenkinsfile (Declarative Pipeline)
 pipeline {
   environment {
     registry = "zhukroman/tabs"
