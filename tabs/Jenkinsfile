@@ -1,0 +1,47 @@
+Jenkinsfile (Declarative Pipeline)
+pipeline {
+  environment {
+    registry = "zhukroman/tabs"
+    registryCredential = 'dockerhub'
+    dockerImage = ''
+  }
+  agent any
+  stages {
+    stage('Cloning git') {
+        steps{
+            git 'https://github.com/zhuk-roman/tabs.git'
+        }
+    }
+    stage('Copy aws credentials') {
+      steps{
+        script {
+          withCredentials([file(credentialsId: 'aws_credentials', variable: 'aws_credentials')]) {
+                    sh "cp \$aws_credentials aws_credentials"
+                }
+        }
+      }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":latest"
+        }
+      }
+    }
+    stage('Push image'){
+        steps{
+            script{
+                docker.withRegistry( '', registryCredential){
+                    dockerImage.push()
+                }
+            }
+        }
+    }
+    stage('Remove unused docker image and sensetive data') {
+      steps{
+        sh "docker rmi $registry"
+        sh "rm -f aws_credentials"
+      }
+    }
+  }
+}
