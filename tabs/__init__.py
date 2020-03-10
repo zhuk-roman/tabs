@@ -18,9 +18,6 @@ login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 app.config['USE_SESSION_FOR_NEXT'] = True
 
-# if not path.isfile('tabs/site.db'):
-#     print ("db file not exist, initialization")
-#     db.create_all()
 
 from tabs import routes
 db.create_all()

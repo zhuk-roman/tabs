@@ -1,0 +1,16 @@
+execution:
+  - scenario: test
+    concurrency: 80
+    ramp-up: 30m
+    hold-for: 60m
+scenarios:
+  test:
+    requests:
+    - http://app.mit.pp.ua/
+    cookies:
+      - name: remember_token
+        value: 1|a3b8cf9671d622fb43788e08776c949455327810abe9c0c969690f4d4f35e1b0a036d1baad8e8ce1566a58bf397fd76ba9d9ded26eb84173358ffa13d60363b6
+        domain: app.mit.pp.ua
+      - name: session
+        value: .eJwlj0tqAzEQBe-itRfqlrpb8mUG9Y8YQwIz9irk7hZk_Siq3m858ozrq9xf5ztu5Xh4uZexlo8UkIieEIaJixo0Jzcf0bISOnMmRQ5XQY6FnStqH3XQagp12tQJTSA9JmSf7MJTOU0Y-upV0ol8j2RbgwEhvNEVk8ut2HXm8fp5xvfuaaau3baqtUBBIEHyCgRsqUwzF4oO29z7ivP_BJS_D1MhQCY.XmawNg.ujvPZ7-zPPRJwVPjfjcig79efls
+        domain: app.mit.pp.ua
